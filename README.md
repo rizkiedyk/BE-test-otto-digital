@@ -1,4 +1,5 @@
-# Test OTTO Digital BE
+````markdown
+# Test OTT Digital BE
 
 Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunakan framework [Gin](https://github.com/gin-gonic/gin) dan Go.
 
@@ -30,6 +31,103 @@ Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunak
 
 1. Clone repository ini:
    ```bash
-   git clone https://github.com/username/test-ottodigital-be.git
-   cd test-ottodigital-be
+   git clone https://github.com/rizkiedyk/BE-test-otto-digital.git
+   cd BE-test-otto-digital
    ```
+````
+
+2. Instal dependensi Go:
+
+   ```bash
+   go mod tidy
+   ```
+
+3. Konfigurasi koneksi database di file konfigurasi (tergantung pada database yang Anda gunakan):
+
+   - Edit `config/config.go` untuk menyesuaikan dengan pengaturan database Anda.
+
+4. Jalankan aplikasi:
+
+   ```bash
+   go run main.go
+   ```
+
+5. Aplikasi akan berjalan di port default `8080`.
+
+## Endpoints API
+
+### Brand
+
+- **POST /api/v1/brand**  
+  Membuat Brand baru.  
+  _Body request_:
+
+  ```json
+  {
+    "name": "Brand Name",
+    "description": "Brand Description"
+  }
+  ```
+
+- **GET /api/v1/brand/{brand_id}**  
+  Mendapatkan detail Brand berdasarkan ID.
+
+- **GET /api/v1/brand**  
+  Mendapatkan daftar semua Brand dengan filter, sort, dan pagination.  
+  _Query params_:
+
+  - `page` (default: 1)
+  - `limit` (default: 10)
+  - `sort_by` (default: "created_at")
+  - `sort_order` (default: "desc")
+  - `filter_by_key` (optional)
+  - `filter_by_value` (optional)
+
+- **PATCH /api/v1/brand/{brand_id}**  
+  Memperbarui informasi Brand berdasarkan ID.  
+  _Body request_:
+
+  ```json
+  {
+    "name": "Updated Brand Name",
+    "description": "Updated Brand Description"
+  }
+  ```
+
+- **DELETE /api/v1/brand/{brand_id}**  
+  Menghapus (soft delete) Brand berdasarkan ID.
+
+### Voucher
+
+- **POST /api/v1/voucher**  
+  Membuat Voucher baru.  
+  _Body request_:
+
+  ```json
+  {
+    "code": "VOUCHER123",
+    "brand_id": "brand_id_here",
+    "discount": 10
+  }
+  ```
+
+- **GET /api/v1/voucher?id={voucher_id}**  
+  Mendapatkan detail Voucher berdasarkan ID.
+
+- **GET /api/v1/voucher/brand?id={brand_id}**  
+  Mendapatkan daftar Voucher berdasarkan ID Brand.
+
+- **POST /api/v1/voucher/transaction/redemption**  
+  Membuat Redemption Voucher.  
+  _Body request_:
+
+  ```json
+  {
+    "voucher_code": "VOUCHER123",
+    "user_id": "user_id_here",
+    "amount": 100
+  }
+  ```
+
+- **GET /api/v1/voucher/transaction/redemption?id={transaction_id}**  
+  Mendapatkan Redemption Voucher berdasarkan Transaction ID.
