@@ -37,6 +37,11 @@ func (m *MockBrandRepository) UpdateBrand(brand model.Brand) error {
 	return args.Error(0)
 }
 
+func (m *MockBrandRepository) SoftDelete(brandID string) error {
+	args := m.Called(brandID)
+	return args.Error(0)
+}
+
 func TestCreateBrand_Success(t *testing.T) {
 	mockRepo := new(MockBrandRepository)
 

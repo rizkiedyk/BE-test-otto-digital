@@ -18,6 +18,7 @@ type IBrandService interface {
 	GetByID(brandID string) (model.Brand, error)
 	GetAll(pagination dto.ReqPagination) (dto.RespBrandGetAll, error)
 	UpdateBrand(brand dto.ReqBrand) error
+	SoftDelete(brandID string) error
 }
 
 type brandService struct {
@@ -80,6 +81,14 @@ func (s *brandService) UpdateBrand(brand dto.ReqBrand) error {
 	existingBrand.UpdatedAt = int(time.Now().Unix())
 
 	err = s.repo.UpdateBrand(existingBrand)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *brandService) SoftDelete(brandID string) error {
+	err := s.repo.SoftDelete(brandID)
 	if err != nil {
 		return err
 	}

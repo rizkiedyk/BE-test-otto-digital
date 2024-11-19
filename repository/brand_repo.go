@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"math"
 	"test-ottodigital-be/domain/dto"
 	"test-ottodigital-be/domain/model"
@@ -17,6 +18,7 @@ type IBrandRepo interface {
 	GetByID(brandID string) (model.Brand, error)
 	GetAll(pagination dto.ReqPagination) ([]model.Brand, dto.Pagination, error)
 	UpdateBrand(brand model.Brand) error
+	SoftDelete(brandID string) error
 }
 
 type brandRepo struct {
@@ -85,5 +87,19 @@ func (r *brandRepo) UpdateBrand(brand model.Brand) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *brandRepo) SoftDelete(brandID string) error {
+	var brand model.Brand
+	if err := r.db.Where("brand_id = ? AND deleted = false", brandID).First(&brand).Error; err != nil {
+		return errors.New("brand not found")
+	}
+
+	brand.Deleted = true
+	if err := r.db.Save(&brand).Error; err != nil {
+		return err
+	}
+
 	return nil
 }

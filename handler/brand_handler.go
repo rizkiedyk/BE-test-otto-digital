@@ -178,3 +178,33 @@ func (h *BrandHandler) UpdateBrand(c *gin.Context) {
 
 	return
 }
+
+func (h *BrandHandler) DeleteBrand(c *gin.Context) {
+	id := c.Param("brand_id")
+
+	err := h.brandService.SoftDelete(id)
+	if err != nil {
+		c.JSON(400, dto.Resp{
+			Meta: dto.Meta{
+				Success:     false,
+				Code:        400,
+				Message:     "Bad Request",
+				ErrorDetail: err.Error(),
+			},
+			Data: nil,
+		})
+		return
+	}
+
+	c.JSON(200, dto.Resp{
+		Meta: dto.Meta{
+			Success:     true,
+			Code:        200,
+			Message:     "Success",
+			ErrorDetail: nil,
+		},
+		Data: nil,
+	})
+
+	return
+}
