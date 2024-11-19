@@ -65,7 +65,7 @@ Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunak
   ```json
   {
     "name": "Brand Name",
-    "description": "Brand Description"
+    "price": "Brand price"
   }
   ```
 
@@ -90,7 +90,7 @@ Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunak
   ```json
   {
     "name": "Updated Brand Name",
-    "description": "Updated Brand Description"
+    "price": "Updated Brand Price"
   }
   ```
 
@@ -105,9 +105,9 @@ Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunak
 
   ```json
   {
-    "code": "VOUCHER123",
+    "code": "code_in_here",
     "brand_id": "brand_id_here",
-    "discount": 10
+    "cost_in_point": 1000
   }
   ```
 
@@ -123,9 +123,7 @@ Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunak
 
   ```json
   {
-    "voucher_code": "VOUCHER123",
-    "user_id": "user_id_here",
-    "amount": 100
+    "voucher_ids": "list of string"
   }
   ```
 
