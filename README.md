@@ -52,7 +52,7 @@ Ini adalah API backend untuk manajemen Voucher dan Brand yang dibangun menggunak
    go run main.go
    ```
 
-5. Aplikasi akan berjalan di port default `8080`.
+5. Aplikasi akan berjalan di port default `1010`.
 
 ## Endpoints API
 
