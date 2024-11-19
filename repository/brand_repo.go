@@ -49,7 +49,7 @@ func (r *brandRepo) GetAll(ReqPagination dto.ReqPagination) ([]model.Brand, dto.
 	var brands []model.Brand
 	var total int64
 
-	query := r.db.Where("deleted = false")
+	query := r.db.Model(&model.Brand{}).Where("deleted = false")
 
 	if ReqPagination.FilterByKey != "" && ReqPagination.FilterByValue != "" {
 		query = query.Where(ReqPagination.FilterByKey+" ILIKE ?", "%"+ReqPagination.FilterByValue+"%")
@@ -63,7 +63,7 @@ func (r *brandRepo) GetAll(ReqPagination dto.ReqPagination) ([]model.Brand, dto.
 		}
 	}
 
-	if err := r.db.Model(&model.Brand{}).Where("deleted = false").Count(&total).Error; err != nil {
+	if err := query.Count(&total).Error; err != nil {
 		return nil, dto.Pagination(ReqPagination), err
 	}
 
