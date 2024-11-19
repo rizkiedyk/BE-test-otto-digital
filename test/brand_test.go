@@ -22,6 +22,11 @@ func (m *MockBrandRepository) CreateBrand(brand model.Brand) error {
 	return args.Error(0)
 }
 
+func (m *MockBrandRepository) GetByID(brandID string) (model.Brand, error) {
+	args := m.Called(brandID)
+	return args.Get(0).(model.Brand), args.Error(1)
+}
+
 func TestCreateBrand_Success(t *testing.T) {
 	mockRepo := new(MockBrandRepository)
 
@@ -75,5 +80,43 @@ func TestCreateBrand_Failure(t *testing.T) {
 
 	assert.Error(t, err, "Brand creation should fail")
 	assert.EqualError(t, err, "failed to create brand", "Error message should match")
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetByID_Success(t *testing.T) {
+	mockRepo := new(MockBrandRepository)
+
+	brandService := service.NewBrandService(mockRepo)
+
+	brandID := uuid.New().String()
+
+	expectedBrand := model.Brand{
+		BrandID: brandID,
+		Name:    "Test Brand",
+	}
+
+	mockRepo.On("GetByID", brandID).Return(expectedBrand, nil)
+
+	brand, err := brandService.GetByID(brandID)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedBrand, brand)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetByID_Failure(t *testing.T) {
+	mockRepo := new(MockBrandRepository)
+
+	brandService := service.NewBrandService(mockRepo)
+
+	brandID := uuid.New().String()
+
+	mockRepo.On("GetByID", brandID).Return(model.Brand{}, errors.New("brand not found"))
+
+	brand, err := brandService.GetByID(brandID)
+
+	assert.Error(t, err)
+	assert.EqualError(t, err, "brand not found")
+	assert.Equal(t, model.Brand{}, brand)
 	mockRepo.AssertExpectations(t)
 }

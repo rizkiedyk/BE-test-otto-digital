@@ -14,6 +14,7 @@ var logger = logging.MustGetLogger("main")
 
 type IBrandService interface {
 	CreateBrand(brand dto.ReqBrand) error
+	GetByID(brandID string) (model.Brand, error)
 }
 
 type brandService struct {
@@ -39,4 +40,13 @@ func (s *brandService) CreateBrand(brand dto.ReqBrand) error {
 		return err
 	}
 	return nil
+}
+
+func (s *brandService) GetByID(brandID string) (model.Brand, error) {
+	brand, err := s.repo.GetByID(brandID)
+	if err != nil {
+		return model.Brand{}, err
+	}
+
+	return brand, nil
 }

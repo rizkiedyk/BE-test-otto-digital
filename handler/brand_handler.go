@@ -59,3 +59,33 @@ func (h *BrandHandler) CreateBrand(c *gin.Context) {
 
 	return
 }
+
+func (h *BrandHandler) GetByID(c *gin.Context) {
+	id := c.Param("brand_id")
+
+	brand, err := h.brandService.GetByID(id)
+	if err != nil {
+		c.JSON(400, dto.Resp{
+			Meta: dto.Meta{
+				Success:     false,
+				Code:        400,
+				Message:     "Bad Request",
+				ErrorDetail: err.Error(),
+			},
+			Data: nil,
+		})
+		return
+	}
+
+	c.JSON(200, dto.Resp{
+		Meta: dto.Meta{
+			Success:     true,
+			Code:        200,
+			Message:     "Success",
+			ErrorDetail: nil,
+		},
+		Data: brand,
+	})
+
+	return
+}
