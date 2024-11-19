@@ -16,11 +16,19 @@ func SetupRouter() *gin.Engine {
 
 	db := config.ConnectDatabase()
 
+	// Brand
 	brandRepo := repository.NewBrandRepo(db)
 	brandService := service.NewBrandService(brandRepo)
 	brandHandler := handler.NewBrandHandler(brandService)
 
+	// Voucher
+	voucherRepo := repository.NewVoucherRepo(db)
+	redemptionVoucherRepo := repository.NewRedemptionVoucherRepo(db)
+	voucherService := service.NewVoucherService(voucherRepo, redemptionVoucherRepo)
+	voucherHandler := handler.NewVoucherHandler(voucherService)
+
 	BrandRouter(apiV1, brandHandler)
+	VoucherRouter(apiV1, voucherHandler)
 
 	return route
 }

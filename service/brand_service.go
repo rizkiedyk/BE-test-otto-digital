@@ -35,6 +35,7 @@ func (s *brandService) CreateBrand(brand dto.ReqBrand) error {
 	req := model.Brand{
 		BrandID:   uuid.New().String(),
 		Name:      brand.Name,
+		Price:     brand.Price,
 		CreatedAt: int(time.Now().Unix()),
 		UpdatedAt: int(time.Now().Unix()),
 	}

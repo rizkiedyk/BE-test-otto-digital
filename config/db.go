@@ -30,6 +30,8 @@ func ConnectDatabase() *gorm.DB {
 
 	// Run migrations
 	db.AutoMigrate(&model.Brand{})
+	db.AutoMigrate(&model.Voucher{})
+	db.AutoMigrate(&model.VoucherRedemption{})
 
 	return db
 }
