@@ -17,6 +17,7 @@ type IBrandService interface {
 	CreateBrand(brand dto.ReqBrand) error
 	GetByID(brandID string) (model.Brand, error)
 	GetAll(pagination dto.ReqPagination) (dto.RespBrandGetAll, error)
+	UpdateBrand(brand dto.ReqBrand) error
 }
 
 type brandService struct {
@@ -67,4 +68,20 @@ func (s *brandService) GetAll(reqPage dto.ReqPagination) (dto.RespBrandGetAll, e
 	}
 
 	return resp, nil
+}
+
+func (s *brandService) UpdateBrand(brand dto.ReqBrand) error {
+	existingBrand, err := s.repo.GetByID(brand.BrandID)
+	if err != nil {
+		return err
+	}
+
+	existingBrand.Name = brand.Name
+	existingBrand.UpdatedAt = int(time.Now().Unix())
+
+	err = s.repo.UpdateBrand(existingBrand)
+	if err != nil {
+		return err
+	}
+	return nil
 }

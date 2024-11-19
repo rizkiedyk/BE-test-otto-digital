@@ -134,3 +134,47 @@ func (h *BrandHandler) GetAll(c *gin.Context) {
 
 	return
 }
+
+func (h *BrandHandler) UpdateBrand(c *gin.Context) {
+	var brand dto.ReqBrand
+	if err := c.ShouldBindJSON(&brand); err != nil {
+		c.JSON(400, dto.Resp{
+			Meta: dto.Meta{
+				Success:     false,
+				Code:        400,
+				Message:     "Bad Request",
+				ErrorDetail: err.Error(),
+			},
+			Data: nil,
+		})
+		return
+	}
+
+	brand.BrandID = c.Param("brand_id")
+
+	err := h.brandService.UpdateBrand(brand)
+	if err != nil {
+		c.JSON(400, dto.Resp{
+			Meta: dto.Meta{
+				Success:     false,
+				Code:        400,
+				Message:     "Bad Request",
+				ErrorDetail: err.Error(),
+			},
+			Data: nil,
+		})
+		return
+	}
+
+	c.JSON(200, dto.Resp{
+		Meta: dto.Meta{
+			Success:     true,
+			Code:        200,
+			Message:     "Success",
+			ErrorDetail: nil,
+		},
+		Data: nil,
+	})
+
+	return
+}

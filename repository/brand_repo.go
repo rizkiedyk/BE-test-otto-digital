@@ -16,6 +16,7 @@ type IBrandRepo interface {
 	CreateBrand(brand model.Brand) error
 	GetByID(brandID string) (model.Brand, error)
 	GetAll(pagination dto.ReqPagination) ([]model.Brand, dto.Pagination, error)
+	UpdateBrand(brand model.Brand) error
 }
 
 type brandRepo struct {
@@ -77,4 +78,12 @@ func (r *brandRepo) GetAll(ReqPagination dto.ReqPagination) ([]model.Brand, dto.
 	ReqPagination.TotalPage = int(math.Ceil(float64(total) / float64(ReqPagination.Limit)))
 
 	return brands, dto.Pagination(ReqPagination), nil
+}
+
+func (r *brandRepo) UpdateBrand(brand model.Brand) error {
+	err := r.db.Save(&brand).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

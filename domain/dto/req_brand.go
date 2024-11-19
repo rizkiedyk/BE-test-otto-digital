@@ -1,5 +1,6 @@
 package dto
 
 type ReqBrand struct {
-	Name string `json:"name"`
+	BrandID string `json:"brand_id"`
+	Name    string `json:"name"`
 }

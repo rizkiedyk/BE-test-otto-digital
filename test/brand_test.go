@@ -32,6 +32,11 @@ func (m *MockBrandRepository) GetAll(pagination dto.ReqPagination) ([]model.Bran
 	return args.Get(0).([]model.Brand), args.Get(1).(dto.Pagination), args.Error(2)
 }
 
+func (m *MockBrandRepository) UpdateBrand(brand model.Brand) error {
+	args := m.Called(brand)
+	return args.Error(0)
+}
+
 func TestCreateBrand_Success(t *testing.T) {
 	mockRepo := new(MockBrandRepository)
 
@@ -233,5 +238,30 @@ func TestGetAll_Error(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Empty(t, resp.Data, "Data should be empty on error")
+	mockRepo.AssertExpectations(t)
+}
+
+func TestUpdateBrand_Success(t *testing.T) {
+	mockRepo := new(MockBrandRepository)
+	brandService := service.NewBrandService(mockRepo)
+
+	brand := dto.ReqBrand{
+		BrandID: uuid.New().String(),
+		Name:    "Updated Brand Name",
+	}
+
+	mockRepo.On("GetByID", brand.BrandID).Return(model.Brand{
+		BrandID: brand.BrandID,
+		Name:    "Old Brand Name",
+	}, nil)
+
+	mockRepo.On("UpdateBrand", mock.MatchedBy(func(updatedBrand model.Brand) bool {
+		return updatedBrand.Name == brand.Name
+	})).Return(nil)
+
+	err := brandService.UpdateBrand(brand)
+
+	assert.NoError(t, err, "Brand update should be successful")
+
 	mockRepo.AssertExpectations(t)
 }
