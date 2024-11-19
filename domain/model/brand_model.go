@@ -11,10 +11,9 @@ type Brand struct {
 	Deleted   bool   `json:"deleted" gorm:"default:false"`
 }
 
-// Hook to set default value for Deleted before creating a brand
 func (b *Brand) BeforeCreate(tx *gorm.DB) (err error) {
 	if b.Deleted == false {
-		b.Deleted = false // Ensure Deleted is set to false
+		b.Deleted = false
 	}
 	return nil
 }
