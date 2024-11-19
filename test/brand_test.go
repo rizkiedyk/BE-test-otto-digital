@@ -27,6 +27,11 @@ func (m *MockBrandRepository) GetByID(brandID string) (model.Brand, error) {
 	return args.Get(0).(model.Brand), args.Error(1)
 }
 
+func (m *MockBrandRepository) GetAll(pagination dto.ReqPagination) ([]model.Brand, dto.Pagination, error) {
+	args := m.Called(pagination)
+	return args.Get(0).([]model.Brand), args.Get(1).(dto.Pagination), args.Error(2)
+}
+
 func TestCreateBrand_Success(t *testing.T) {
 	mockRepo := new(MockBrandRepository)
 
@@ -118,5 +123,115 @@ func TestGetByID_Failure(t *testing.T) {
 	assert.Error(t, err)
 	assert.EqualError(t, err, "brand not found")
 	assert.Equal(t, model.Brand{}, brand)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetAll_Success(t *testing.T) {
+	mockRepo := new(MockBrandRepository)
+	mockPagination := dto.ReqPagination{
+		Page:          1,
+		Limit:         10,
+		Total:         2,
+		SortBy:        "name",
+		SortOrder:     "asc",
+		FilterByKey:   "name",
+		FilterByValue: "Brand",
+	}
+
+	expectedBrands := []model.Brand{
+		{BrandID: uuid.New().String(), Name: "Brand 1"},
+		{BrandID: uuid.New().String(), Name: "Brand 2"},
+	}
+
+	expectedPagination := dto.Pagination{
+		Page:      1,
+		Limit:     10,
+		Total:     2,
+		SortBy:    "name",
+		SortOrder: "asc",
+		TotalPage: 1,
+	}
+
+	mockRepo.On("GetAll", mock.MatchedBy(func(arg dto.ReqPagination) bool {
+		return arg.Total == 0
+	})).Return(expectedBrands, expectedPagination, nil)
+
+	brandService := service.NewBrandService(mockRepo)
+
+	resp, err := brandService.GetAll(mockPagination)
+
+	assert.NoError(t, err, "There should be no error")
+	assert.Equal(t, expectedPagination.Page, resp.Pagination.Page, "Pagination Page should match")
+	assert.Equal(t, expectedPagination.Limit, resp.Pagination.Limit, "Pagination Limit should match")
+	assert.Equal(t, expectedPagination.Total, resp.Pagination.Total, "Pagination Total should match")
+	assert.Equal(t, expectedPagination.SortBy, resp.Pagination.SortBy, "Pagination SortBy should match")
+	assert.Equal(t, expectedPagination.SortOrder, resp.Pagination.SortOrder, "Pagination SortOrder should match")
+	assert.Equal(t, len(expectedBrands), len(resp.Data), "Brand data length should match")
+	assert.Equal(t, expectedBrands[0].Name, resp.Data[0].Name, "First brand name should match")
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetAll_Failure(t *testing.T) {
+
+	mockRepo := new(MockBrandRepository)
+	mockPagination := dto.ReqPagination{
+		Page:          1,
+		Limit:         10,
+		Total:         0,
+		SortBy:        "name",
+		SortOrder:     "asc",
+		FilterByKey:   "brand_name",
+		FilterByValue: "test",
+	}
+	expectedBrands := []model.Brand{
+		{ID: 1, Name: "Brand 1"},
+		{ID: 2, Name: "Brand 2"},
+	}
+	expectedPagination := dto.Pagination{
+		Page:      1,
+		Limit:     10,
+		Total:     2,
+		SortBy:    "name",
+		SortOrder: "asc",
+	}
+
+	mockRepo.On("GetAll", mockPagination).Return(expectedBrands, expectedPagination, nil)
+
+	brandService := service.NewBrandService(mockRepo)
+
+	resp, err := brandService.GetAll(mockPagination)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedPagination.Page, resp.Pagination.Page, "Pagination Page should match")
+	assert.Equal(t, expectedPagination.Limit, resp.Pagination.Limit, "Pagination Limit should match")
+	assert.Equal(t, expectedPagination.Total, resp.Pagination.Total, "Pagination Total should match")
+	assert.Equal(t, expectedPagination.SortBy, resp.Pagination.SortBy, "Pagination SortBy should match")
+	assert.Equal(t, expectedPagination.SortOrder, resp.Pagination.SortOrder, "Pagination SortOrder should match")
+	assert.Equal(t, len(expectedBrands), len(resp.Data), "Brand data length should match")
+	assert.Equal(t, expectedBrands[0].Name, resp.Data[0].Name, "First brand name should match")
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetAll_Error(t *testing.T) {
+
+	mockRepo := new(MockBrandRepository)
+	mockPagination := dto.ReqPagination{
+		Page:          1,
+		Limit:         10,
+		Total:         0,
+		SortBy:        "name",
+		SortOrder:     "asc",
+		FilterByKey:   "brand_name",
+		FilterByValue: "test",
+	}
+
+	mockRepo.On("GetAll", mockPagination).Return([]model.Brand{}, dto.Pagination{}, errors.New("database error"))
+
+	brandService := service.NewBrandService(mockRepo)
+
+	resp, err := brandService.GetAll(mockPagination)
+
+	assert.Error(t, err)
+	assert.Empty(t, resp.Data, "Data should be empty on error")
 	mockRepo.AssertExpectations(t)
 }

@@ -22,7 +22,6 @@ func ConnectDatabase() *gorm.DB {
 	)
 
 	uri := fmt.Sprintf("host=%s user=%s dbname=%s port=%s sslmode=disable", HOST, USER, DB_NAME, PORT)
-	logger.Info("uri: ", uri)
 	dsn := uri
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
